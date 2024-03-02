@@ -2,7 +2,7 @@
 #include <iostream>
 
 /*
-1. 
+ 
 Desenvolva uma aplicação para cadastrar carro.
 Crie uma estrutura para cadastro ( placa, ano, marca)
 Crie uma estrutura para revisoes (data, local).
