@@ -1,14 +1,13 @@
-
-#include <iostream>
-
 /*
  
 Desenvolva uma aplicação para cadastrar carro.
 Crie uma estrutura para cadastro ( placa, ano, marca)
 Crie uma estrutura para revisoes (data, local).
 É previsto 5 revisões.
-
 */
+
+#include <chrono>
+#include <iostream>
 
 using namespace std;
 
@@ -35,6 +34,7 @@ string registrarMarca();
 string criarData();
 string registrarLocal(int qtdRevisoes);
 string registrarData();
+
 
 int main()
 {
@@ -95,8 +95,9 @@ string registrarLocal(int qtdRevisoes) {
 
 string registrarData() {
     string data;
+
+
     cout <<endl << "informe a data :" << endl;
     cin >> data;
     return data;
 };
-
