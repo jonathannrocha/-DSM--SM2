@@ -3,3 +3,7 @@
 *.exec
 
 output
+
+build 
+
+*.exe
