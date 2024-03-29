@@ -23,7 +23,7 @@ struct Carro {
 	string modelo;
 	int anoFab;
 };
-
+ 
 struct Estacionamento {
 	Carro listaCarros[MAX_ESTACIONAMENTO];
 	int qtdCarros;
