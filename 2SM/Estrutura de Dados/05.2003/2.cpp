@@ -27,6 +27,7 @@ struct Historic {
 string getDomain();
 void addDomain(Historic *historic);
 void deleteDomain(Historic *historic);
+void printRegisterActives( Historic *historic);
 
 int main(){ 
     Historic *historicDomains;
@@ -40,7 +41,9 @@ int main(){
         cout << "Escolha uma opcao:" << endl;
         cout << "1 - acessar site" << endl;
         cout << "2 - voltar site anterior" << endl;
-        cout << "3 - finalizar"<< endl;
+        cout << "3 - listar historico"<< endl;
+        cout << "4 - finalizar"<< endl;
+
         cin >> selection;
 
         if(selection  == 1) {
@@ -49,13 +52,18 @@ int main(){
         }
 
         if( selection == 2) {
+            system("cls");
             deleteDomain(historicDomains);
-            // system("cls");
         }
 
         if( selection == 3) {
             system("cls");
             controller++;
+        }
+
+        if( selection==4) {
+            system("cls");
+            printRegisterActives(historicDomains);
         }
     }
 };
@@ -80,7 +88,6 @@ void addDomain(Historic *historic) {
 }
 
 void deleteDomain(Historic *historic) {
-
     if( historic->size == 0 ) {
         cout << "Sem histórico!!" << endl;
         return;
@@ -88,10 +95,14 @@ void deleteDomain(Historic *historic) {
     Domain *lastItemHistoric = historic->lastItem;
     historic->lastItem = lastItemHistoric->before;
     historic->size--;
-    cout << "Endereco anterior acessado: " << lastItemHistoric->path << endl;
+    cout << "Endereco anterior acessado: " << historic->lastItem->path << endl;
     delete lastItemHistoric;
 }
 
-void printRegisterActives() {
-    
+void printRegisterActives(Historic *historic) {
+    Domain *lasItem = historic->lastItem;
+    for( int domainItens = 0; domainItens < historic->size; domainItens++) {
+        cout << "Domain " << lasItem->path << endl;
+        lasItem = lasItem->before;
+    }
 }
