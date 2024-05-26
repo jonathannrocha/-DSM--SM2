@@ -9,3 +9,9 @@ build
 *.exe
 
 .gitignore
+
+*.ctxt
+
+*.class
+
+README.TXT
