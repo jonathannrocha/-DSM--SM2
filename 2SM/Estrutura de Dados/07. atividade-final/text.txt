@@ -1,0 +1,5 @@
+[ID] 1
+[NOME] jo
+[CURSO] ge
+[SEMESTRE] 1
+[ANO INGRESSO] 2020
