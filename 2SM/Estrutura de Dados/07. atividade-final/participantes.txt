@@ -1,0 +1,2 @@
+ID:1,nome:rocha,semestre:1,anoIngresso:1,curso:ge,
+ID:2,nome:jonathan,semestre:2,anoIngresso:2,curso:DSM,

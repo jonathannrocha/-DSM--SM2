@@ -1,7 +1,4 @@
 #include <iostream>
-#include <stdio.h>
-#include <cstdio>
-#include <string>
 #include <vector>
 using namespace std;
 
@@ -25,13 +22,32 @@ struct lista {
     node * ultimoItem;
 };
 
+
+// não fiz com o proximo e anterior, pela dica do professor!
+struct contribuinte {
+    int IDparticipante;
+    int mes;
+    int ano;
+    float valorContribuicao;
+    contribuinte * proximoItem;
+};
+
+struct listaContribuinte {
+    int qtd;
+    node * primeiroItem;
+    node * ultimoItem;
+};
+
+
 participante criarParticipante();
+void criarContribuinte(lista *); // ajustar depois
+int pesquisarAluno(int , lista *);
 void inicializarLista(lista *);
 void inserirParticipante(lista *, participante);
 void listarTudo(lista *);
 void editarAluno(lista *);
 int alterarProprieade(string propriedade);
-vector< string> split(const string& , char );
+vector<string> split(const string& , char );
 void lerGravarArquivo(lista *);
 void gravarParticipantes(lista * );
 
@@ -52,7 +68,8 @@ int main() {
         cout << "| 3 - Editar participante                 |" << endl;
         cout << "| 4 - ler Arquivo                         |" << endl;
         cout << "| 5 - Gravar Arquivo                      |" << endl;
-        cout << "| # - Sair do menu                        |" << endl;
+        cout << "| 6 - Cadastrar contribuinte              |" << endl;
+        cout << "| 10 - Sair                               |" << endl;
         cout << "|-----------------------------------------|" << endl;
         cin >> opcaoMenu;
 
@@ -72,8 +89,11 @@ int main() {
             case 5: 
                 gravarParticipantes(listagem);
             break;
-            default:
-
+            case 6: 
+                criarContribuinte(listagem);
+            break;
+             case 10: 
+                return 0;
             break;
         }
     };
@@ -115,20 +135,32 @@ void inserirParticipante(lista *listagem, participante novoParticipante) {
     
     if(listagem->primeiroItem == NULL) {
         listagem->qtd++;
-        novoNode->item.ID=1;
+
+        if( novoParticipante.ID == 0 ) {
+            novoNode->item.ID=1;
+        }
+        
         listagem->primeiroItem = novoNode;    
         return;
     }
     
     if( listagem->qtd == 1) {
         listagem->qtd++;
-        novoNode->item.ID=2;
+
+        if( novoParticipante.ID == 0 ) {
+            novoNode->item.ID=2;
+        }
+        
         listagem->ultimoItem = novoNode;
         listagem->primeiroItem->proximo = listagem->ultimoItem;
         listagem->ultimoItem->anterior = listagem->primeiroItem;
         return;
     } else {
-        novoNode->item.ID = listagem->ultimoItem->item.ID + 1 ;
+
+        if( novoParticipante.ID == 0 ) {
+            novoNode->item.ID = listagem->ultimoItem->item.ID + 1 ;
+        }
+        
         novoNode->anterior = listagem->ultimoItem;
         novoNode->anterior->proximo = novoNode;
         listagem->ultimoItem = novoNode;
@@ -142,7 +174,8 @@ void listarTudo(lista *listagem) {
         cout << endl << "Nenhum aluno registrado!!!";
         return;
     }
-     node * itemTemp = listagem->primeiroItem;
+    
+    node * itemTemp = listagem->primeiroItem;
     while( itemTemp != NULL) {
       
         cout << endl << "--------------------------------------------- ";
@@ -210,8 +243,7 @@ int alterarProprieade(string propriedade) {
 };
 
 void lerGravarArquivo(lista * listagem) {
-  
-    FILE *arq = fopen("../text.txt", "rt");         
+    FILE *arq = fopen("../participantes.txt", "rt");         
     if (arq == NULL) {
        cout << "Problemas na abertura do arquivo!" << endl;
     }
@@ -235,15 +267,12 @@ void lerGravarArquivo(lista * listagem) {
                 size_t end = str.find(":");
                 valor = str.substr(end+1);
                 propriedade = str.substr(0, end);
-                cout << valor;
-                novoParticipante.ID = 0;
+
+                if(propriedade == "ID" ) novoParticipante.ID = stol(valor);
                 if(propriedade == "nome" ) novoParticipante.primeiroNome = valor;
                 if(propriedade == "semestre" ) novoParticipante.semestre = stol(valor);
                 if(propriedade == "anoIngresso" ) novoParticipante.anoIngresso = stol(valor);
-                if(propriedade == "curso" )  {
-                    novoParticipante.curso = valor.substr(0,2);
-                    // cout << valor;
-                }
+                if(propriedade == "curso" )  novoParticipante.curso = valor;
             }
 
             inserirParticipante(listagem, novoParticipante);
@@ -286,7 +315,7 @@ void gravarParticipantes(lista * listagem) {
         return;
     }
 
-    FILE *arq = fopen("../text.txt", "w");         
+    FILE *arq = fopen("../participantes.txt", "w");         
     if (arq == NULL) {
        cout << "Problemas na abertura do arquivo!" << endl;
     }
@@ -295,12 +324,12 @@ void gravarParticipantes(lista * listagem) {
     node * itemTemp = listagem->primeiroItem;
     while( itemTemp != NULL) {
 
-        string valor = "nome:" + itemTemp->item.primeiroNome;
+        string valor = "ID:" + to_string(itemTemp->item.ID);
+        valor = valor + ",nome:" + itemTemp->item.primeiroNome;
         valor = valor + ",semestre:" + to_string(itemTemp->item.semestre);
         valor = valor + ",anoIngresso:"+to_string(itemTemp->item.anoIngresso);
-        valor = valor + ",curso:"+itemTemp->item.curso;
+        valor = valor + ",curso:"+itemTemp->item.curso + ",";
         valor = valor + "\n";
-
         string temp = valor;
         fputs(valor.c_str(), arq);
         itemTemp = itemTemp->proximo;
@@ -308,3 +337,85 @@ void gravarParticipantes(lista * listagem) {
 
     fclose(arq);
 }
+
+void criarContribuinte(lista * listagem) {
+    contribuinte novoContribuinte;
+    if( listagem->qtd ==0) {
+        cout << "Nenhum aluno cadastrado!";
+        return;
+    }
+
+    cout << endl << "Qual o ID do participante?";
+    cin >> novoContribuinte.IDparticipante;
+
+    int auxLoopID=0;
+    while( auxLoopID == 0 ) {
+        novoContribuinte.IDparticipante = pesquisarAluno(novoContribuinte.IDparticipante, listagem);
+        if(novoContribuinte.IDparticipante == 0 ) {
+            cout << endl << "Qual o ID do participante? (Caso queria sair: Digite 0)";
+            cin >> novoContribuinte.IDparticipante;
+            if( novoContribuinte.IDparticipante ==0 ) {
+                auxLoopID =1;
+            }
+        } else {
+            auxLoopID =1;
+        }
+    }
+
+    cout << endl << "Qual e o mes? (entre 1 e 12)";
+    cin >> novoContribuinte.mes;
+    auxLoopID=0;
+    while( auxLoopID == 0 ) {
+        if(novoContribuinte.mes > 1 && novoContribuinte.mes > 12 ) {
+            cout << endl << "Qual e o mes? (Caso queria sair: Digite 0)";
+            cin >> novoContribuinte.mes;
+            if( novoContribuinte.mes == 0 ) {
+                auxLoopID =1;
+            }
+        } else {
+            auxLoopID = 1;
+        }
+    }
+
+    cout << endl << "Qual e o ano? (maior que 2024)";
+    cin >> novoContribuinte.ano;
+    auxLoopID=0;
+    while( auxLoopID == 0 ) {
+        if(novoContribuinte.ano <2024 ) {
+            cout << endl << "Qual e o ano? (Caso queria sair: Digite 0)";
+            cin >> novoContribuinte.ano;
+            if( novoContribuinte.ano == 0 ) {
+                auxLoopID =1;
+            }
+        } else {
+            auxLoopID = 1;
+        }
+    }
+
+    cout << endl << "Qual e o valor de contribuicao?";
+    cin >> novoContribuinte.valorContribuicao;
+}
+
+int pesquisarAluno(int IdParticipante, lista * listagem) {
+    node * participantePesquisado;
+    participantePesquisado = NULL;
+    node * itemTemp = listagem->primeiroItem;
+
+    while( itemTemp != NULL) {
+        if( itemTemp->item.ID == IdParticipante) {
+            participantePesquisado = itemTemp;
+            itemTemp = NULL;
+        } else {
+            itemTemp = itemTemp->proximo;
+        }
+    }
+
+    if(participantePesquisado == NULL) {
+        return 0;
+    } else {
+        cout << "OPA";
+        return participantePesquisado->item.ID;
+    }
+
+   
+};

@@ -1,6 +1,0 @@
-nome:Jonatha,semestre:6,anoIngresso:2020,curso:GE
-nome:ROCHA,semestre:2,anoIngresso:2023,curso:DS
-nome:MA,semestre:999,anoIngresso:999,curso:SI
-nome:Jonatha,semestre:6,anoIngresso:2020,curso:GE
-nome:ROCHA,semestre:2,anoIngresso:2023,curso:DS
-nome:MA,semestre:2,anoIngresso:2020,curso:GE
