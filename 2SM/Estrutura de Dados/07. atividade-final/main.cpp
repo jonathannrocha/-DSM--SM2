@@ -34,15 +34,14 @@ struct contribuinte {
 
 struct listaContribuinte {
     int qtd;
-    node * primeiroItem;
-    node * ultimoItem;
+    contribuinte * primeiroItem;
+    contribuinte * ultimoItem;
 };
 
 
 participante criarParticipante();
-void criarContribuinte(lista *); // ajustar depois
+void criarContribuinte(lista *, listaContribuinte * ); // ajustar depois
 int pesquisarAluno(int , lista *);
-void inicializarLista(lista *);
 void inserirParticipante(lista *, participante);
 void listarTudo(lista *);
 void editarAluno(lista *);
@@ -50,11 +49,21 @@ int alterarProprieade(string propriedade);
 vector<string> split(const string& , char );
 void lerGravarArquivo(lista *);
 void gravarParticipantes(lista * );
+void gravarContribuientes(listaContribuinte *);
+ void gravarContribuientesPorCurso(listaContribuinte *, lista *);
 
 int main() {
 
     lista *listagem = new lista;
-    inicializarLista(listagem);
+    listagem->primeiroItem = NULL;
+    listagem->ultimoItem = NULL;
+    listagem->qtd = 0;
+
+    listaContribuinte * listagemContribuinte = new listaContribuinte;
+
+    listagemContribuinte->primeiroItem = NULL;
+    listagemContribuinte->ultimoItem = NULL;
+    listagemContribuinte->qtd =0;
 
     int loopMenu = 0;
     while(loopMenu == 0) {
@@ -69,6 +78,8 @@ int main() {
         cout << "| 4 - ler Arquivo                         |" << endl;
         cout << "| 5 - Gravar Arquivo                      |" << endl;
         cout << "| 6 - Cadastrar contribuinte              |" << endl;
+        cout << "| 7 - Gravar Contribuintes                |" << endl;
+        cout << "| 8 - Gerar relacoes de contribuentes     |" << endl;
         cout << "| 10 - Sair                               |" << endl;
         cout << "|-----------------------------------------|" << endl;
         cin >> opcaoMenu;
@@ -90,9 +101,15 @@ int main() {
                 gravarParticipantes(listagem);
             break;
             case 6: 
-                criarContribuinte(listagem);
+                criarContribuinte(listagem, listagemContribuinte);
             break;
-             case 10: 
+            case 7: 
+                gravarContribuientes(listagemContribuinte);
+            break;
+             case 8: 
+                gravarContribuientesPorCurso(listagemContribuinte, listagem);
+            break;
+            case 10: 
                 return 0;
             break;
         }
@@ -106,7 +123,7 @@ participante criarParticipante(){
     cout << endl;
     cout << "Qual e seu primeiro nome?" << endl;
     cin >> novoParticipante.primeiroNome;
-    cout << "Qual e seu curso?" << endl;
+    cout << "Qual e seu curso GE, DSM ou SI?" << endl;
     cin >> novoParticipante.curso ;
     cout << "Qual e seu ano de ingresso na Fatec?" << endl;
     cin >> novoParticipante.anoIngresso;
@@ -115,12 +132,6 @@ participante criarParticipante(){
     novoParticipante.ID = 0;
 
     return novoParticipante;
-}
-
-void inicializarLista(lista *listagem) {
-    listagem->primeiroItem = NULL;
-    listagem->ultimoItem = NULL;
-    listagem->qtd = 0;
 }
 
 void inserirParticipante(lista *listagem, participante novoParticipante) {
@@ -338,24 +349,26 @@ void gravarParticipantes(lista * listagem) {
     fclose(arq);
 }
 
-void criarContribuinte(lista * listagem) {
-    contribuinte novoContribuinte;
+void criarContribuinte(lista * listagem, listaContribuinte * listagemContribuinte) {
+    contribuinte * novoContribuinte = new contribuinte;
+   
     if( listagem->qtd ==0) {
         cout << "Nenhum aluno cadastrado!";
         return;
     }
 
     cout << endl << "Qual o ID do participante?";
-    cin >> novoContribuinte.IDparticipante;
+    cin >>  novoContribuinte->IDparticipante;
+    
 
     int auxLoopID=0;
     while( auxLoopID == 0 ) {
-        novoContribuinte.IDparticipante = pesquisarAluno(novoContribuinte.IDparticipante, listagem);
-        if(novoContribuinte.IDparticipante == 0 ) {
+        novoContribuinte->IDparticipante = pesquisarAluno(novoContribuinte->IDparticipante, listagem);
+        if(novoContribuinte->IDparticipante == 0 ) {
             cout << endl << "Qual o ID do participante? (Caso queria sair: Digite 0)";
-            cin >> novoContribuinte.IDparticipante;
-            if( novoContribuinte.IDparticipante ==0 ) {
-                auxLoopID =1;
+            cin >> novoContribuinte->IDparticipante;
+            if( novoContribuinte->IDparticipante ==0 ) {
+                return;
             }
         } else {
             auxLoopID =1;
@@ -363,14 +376,14 @@ void criarContribuinte(lista * listagem) {
     }
 
     cout << endl << "Qual e o mes? (entre 1 e 12)";
-    cin >> novoContribuinte.mes;
+    cin >> novoContribuinte->mes;
     auxLoopID=0;
     while( auxLoopID == 0 ) {
-        if(novoContribuinte.mes > 1 && novoContribuinte.mes > 12 ) {
+        if(novoContribuinte->mes > 1 && novoContribuinte->mes > 12 ) {
             cout << endl << "Qual e o mes? (Caso queria sair: Digite 0)";
-            cin >> novoContribuinte.mes;
-            if( novoContribuinte.mes == 0 ) {
-                auxLoopID =1;
+            cin >> novoContribuinte->mes;
+            if( novoContribuinte->mes == 0 ) {
+                return;
             }
         } else {
             auxLoopID = 1;
@@ -378,14 +391,14 @@ void criarContribuinte(lista * listagem) {
     }
 
     cout << endl << "Qual e o ano? (maior que 2024)";
-    cin >> novoContribuinte.ano;
+    cin >> novoContribuinte->ano;
     auxLoopID=0;
     while( auxLoopID == 0 ) {
-        if(novoContribuinte.ano <2024 ) {
+        if(novoContribuinte->ano <2024 ) {
             cout << endl << "Qual e o ano? (Caso queria sair: Digite 0)";
-            cin >> novoContribuinte.ano;
-            if( novoContribuinte.ano == 0 ) {
-                auxLoopID =1;
+            cin >> novoContribuinte->ano;
+            if( novoContribuinte->ano == 0 ) {
+                 return;
             }
         } else {
             auxLoopID = 1;
@@ -393,7 +406,127 @@ void criarContribuinte(lista * listagem) {
     }
 
     cout << endl << "Qual e o valor de contribuicao?";
-    cin >> novoContribuinte.valorContribuicao;
+    cin >> novoContribuinte->valorContribuicao;
+
+    if(listagemContribuinte->qtd == 0 ) {
+        listagemContribuinte->qtd++;
+        listagemContribuinte->primeiroItem = novoContribuinte;
+        listagemContribuinte->primeiroItem->proximoItem = NULL;
+    } 
+
+    if( listagemContribuinte->qtd == 1) {
+        listagemContribuinte->qtd++;
+        listagemContribuinte->ultimoItem = novoContribuinte;
+        listagemContribuinte->primeiroItem->proximoItem = novoContribuinte;
+    }
+
+    if( listagemContribuinte->qtd > 1) {
+        listagemContribuinte->qtd++;
+        listagemContribuinte->ultimoItem->proximoItem = novoContribuinte;
+        listagemContribuinte->ultimoItem = novoContribuinte;
+         listagemContribuinte->ultimoItem->proximoItem = NULL;
+    }   
+}
+
+void gravarContribuientes(listaContribuinte * listagemContribuinte) {
+    if( listagemContribuinte->qtd== 0) {
+        cout << endl << "Nenhum aluno registrado!!!";
+        return;
+    }
+
+    FILE *arq = fopen("../contribuintes.txt", "w");         
+    if (arq == NULL) {
+       cout << "Problemas na abertura do arquivo!" << endl;
+    }
+
+    
+    contribuinte * itemTemp = listagemContribuinte->primeiroItem;
+    while( itemTemp != NULL) {
+        string valor = "IDParticipante:" + to_string(itemTemp->IDparticipante);
+        valor = valor + ",mes:" + to_string(itemTemp->mes);
+        valor = valor + ",ano:" + to_string(itemTemp->ano);
+        valor = valor + ",Contribuicao:"+to_string(itemTemp->valorContribuicao)+ ",";
+        valor = valor + "\n";
+        string temp = valor;
+        fputs(valor.c_str(), arq);
+        itemTemp = itemTemp->proximoItem;
+    }
+    fclose(arq);
+
+    if( listagemContribuinte->qtd== 0) return;
+    
+    itemTemp = listagemContribuinte->primeiroItem;
+    cout << itemTemp->proximoItem;
+    while( itemTemp != NULL) {
+        cout << endl << "--------------------------------------------- ";
+        cout << endl << "ID participante: " << itemTemp->IDparticipante;
+        cout << endl << "--------------------------------------------- ";
+        cout << endl << "mes: " << itemTemp->mes;
+        cout << endl << "ano: " << itemTemp->ano;
+        cout << endl << "contribuicao: " << itemTemp->valorContribuicao;
+        cout << endl;
+        itemTemp = itemTemp->proximoItem;
+    }
+}
+
+void gravarContribuientesPorCurso(listaContribuinte * listagemContribuinte, lista * listagem) {
+    if(listagemContribuinte->qtd == 0) {
+        cout << endl <<"Sem contribuicoes!!";
+        return;
+    }
+
+     if( listagemContribuinte->qtd== 0) {
+        cout << endl << "Nenhum aluno registrado!!!";
+        return;
+    }
+
+    FILE *arqDSM = fopen("../contribuintes_DSM.txt", "w");         
+    FILE *arqSI = fopen("../contribuintes_SI.txt", "w");         
+    FILE *arqGE = fopen("../contribuintes_GE.txt", "w");         
+    if (arqDSM == NULL || arqSI == NULL || arqGE == NULL) {
+       cout << "Problemas na abertura do arquivo!" << endl;
+       return;
+    }
+
+    contribuinte * itemTempContribuente = listagemContribuinte->primeiroItem;
+    cout << itemTempContribuente->proximoItem;
+    while( itemTempContribuente != NULL) {
+        string auxCurso;
+
+        node * itemTempParticipante = listagem->primeiroItem;
+
+        while( itemTempParticipante != NULL) {
+            if( itemTempParticipante->item.ID == itemTempContribuente->IDparticipante) {
+                string valor = "ID:" + to_string(itemTempParticipante->item.ID);
+                valor = valor + ",nome:" + itemTempParticipante->item.primeiroNome;
+                valor = valor + ",semestre:" + to_string(itemTempParticipante->item.semestre);
+                valor = valor + ",anoIngresso:"+to_string(itemTempParticipante->item.anoIngresso);
+                valor = valor + ",curso:"+itemTempParticipante->item.curso + ",";
+                valor = valor + "\n";
+                string temp = valor;
+
+                if(itemTempParticipante->item.curso =="GE") {
+                    fputs( valor.c_str(), arqGE);
+                }
+
+                if(itemTempParticipante->item.curso =="SI") {
+                    fputs( valor.c_str(), arqSI);
+                }
+
+                if(itemTempParticipante->item.curso =="DSM") {
+                    fputs( valor.c_str(), arqDSM);
+                }
+            }
+
+            itemTempParticipante = itemTempParticipante->proximo;
+        }
+        
+        itemTempContribuente = itemTempContribuente->proximoItem;
+    }
+
+    fclose(arqDSM);
+    fclose(arqGE);
+    fclose(arqSI);
 }
 
 int pesquisarAluno(int IdParticipante, lista * listagem) {
@@ -416,6 +549,5 @@ int pesquisarAluno(int IdParticipante, lista * listagem) {
         cout << "OPA";
         return participantePesquisado->item.ID;
     }
-
    
 };
